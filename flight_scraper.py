@@ -33,20 +33,12 @@ try:
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "/html/body/c-wiz[2]/div/div[2]/div/div[1]/div/c-wiz/div[2]/div/div[1]/div[1]/div/div/div/div[2]/div[2]/div[1]/div[1]/section/div[2]/div/div[2]/div[2]/div/div/button[2]")))
     carryonButton = driver.find_element_by_xpath("/html/body/c-wiz[2]/div/div[2]/div/div[1]/div/c-wiz/div[2]/div/div[1]/div[1]/div/div/div/div[2]/div[2]/div[1]/div[1]/section/div[2]/div/div[2]/div[2]/div/div/button[2]")
     carryonButton.click()
-    # Move to slider and change slider to desired price # FIXME
-    slider = driver.find_element_by_xpath("/html/body/c-wiz[2]/div/div[2]/div/div/div/c-wiz/div[2]/div/div[1]/div[1]/section/div/div[1]/div[1]/div[1]/div[3]/div[2]/div/div/div/div/div[2]/div/div/div/div[4]")
-    ActionChains(driver).move_to_element(slider).pause(1).click_and_hold(slider).move_by_offset(-50, 0).release().perform()
-    sliderPriceElement = driver.find_element_by_xpath("/html/body/c-wiz[2]/div/div[2]/div/div[1]/div/c-wiz/div[2]/div/div[1]/div[1]/section/div/div[1]/div[1]/div[1]/div[3]/div[2]/div/div/div/div/div[2]/div/div/div/div[4]/div[4]/div")
-    sliderValue = sliderPriceElement.text
-#    while(sliderValue != MAX_PRICE):
-#        ActionChains(driver).click_and_hold(slider).pause(1).move_by_offset(-30, 0).release().perform()
-#        sliderPriceElement = driver.find_element_by_xpath("/html/body/c-wiz[2]/div/div[2]/div/div[1]/div/c-wiz/div[2]/div/div[1]/div[1]/section/div/div[1]/div[1]/div[1]/div[3]/div[2]/div/div/div/div/div[2]/div/div/div/div[4]/div[4]/div")
-#        sliderValue = sliderPriceElement.text
+    # TODO: Instead of changing the slider, just scrape all listings and check the price on each one to decide whether or not to include it in DataFrame.
     
     
     
 finally:
-    print("Completed.")
+    print("Scraping completed.")
 
 #-------For headless mode, use this code-------
 #from selenium import webdriver
@@ -59,7 +51,7 @@ finally:
 #options.add_argument("--window-size=1920,1200")
 #
 #driver = webdriver.Chrome(options = options, executable_path = DRIVER_PATH)
-#driver.get("https://google.com")
+#driver.get("https://google.com/flights")
 #print(driver.page_source)
 #driver.quit()
 #-----------------------------------------------
