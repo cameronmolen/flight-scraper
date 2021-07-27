@@ -15,36 +15,42 @@ driver.get("https://www.google.com/flights")
 
 try:
     # Enter in departing airport
-    time.sleep(1)
-    whereFromInput = driver.find_element_by_xpath("//*[@id=\"i6\"]/div[1]/div/div/div[1]/div/div/input")
-    whereFromInput.click()
-    whereFromInput.send_keys(DEPARTING_AIRPORT)
-    whereFromInput.send_keys(Keys.ENTER)
-    time.sleep(1)
-    airportSelector = driver.find_element_by_xpath("/html/body/c-wiz[2]/div/div[2]/div/c-wiz/div/c-wiz/div[2]/div[1]/div[1]/div[2]/div[1]/div[6]/div[2]/div[6]/div/ul/li[1]/div[2]/div[1]/div")
-    airportSelector.click()
+    try:
+        whereFromInput = driver.find_element_by_xpath("//*[@id=\"i6\"]/div[1]/div/div/div[1]/div/div/input")
+        whereFromInput.click()
+        whereFromInput.send_keys(DEPARTING_AIRPORT)
+        whereFromInput.send_keys(Keys.ENTER)
+        time.sleep(1)
+        airportSelector = driver.find_element_by_xpath("/html/body/c-wiz[2]/div/div[2]/div/c-wiz/div/c-wiz/div[2]/div[1]/div[1]/div[2]/div[1]/div[6]/div[2]/div[6]/div/ul/li[1]/div[2]/div[1]/div")
+        airportSelector.click()
+    except:
+        print("Error: Scraping failed. Try again.")
     # Click search button
     searchButton = driver.find_element_by_xpath("//*[@id=\"yDmH0d\"]/c-wiz[2]/div/div[2]/div/c-wiz/div/c-wiz/div[2]/div[1]/div[2]/div/button")
     searchButton.click()
     # Click bags button and select 1 carry-on
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "/html/body/c-wiz[2]/div/div[2]/div/div[1]/div/c-wiz/div[2]/div/div[1]/div[1]/div/div/div/div/div[2]/div[1]/div/div[5]")))
+    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "/html/body/c-wiz[2]/div/div[2]/div/div[1]/div/c-wiz/div[2]/div/div[1]/div[1]/div/div/div/div/div[2]/div[1]/div/div[5]")))
     bagsButton = driver.find_element_by_xpath("/html/body/c-wiz[2]/div/div[2]/div/div[1]/div/c-wiz/div[2]/div/div[1]/div[1]/div/div/div/div/div[2]/div[1]/div/div[5]")
     bagsButton.click()
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "/html/body/c-wiz[2]/div/div[2]/div/div[1]/div/c-wiz/div[2]/div/div[1]/div[1]/div/div/div/div[2]/div[2]/div[1]/div[1]/section/div[2]/div/div[2]/div[2]/div/div/button[2]")))
+    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "/html/body/c-wiz[2]/div/div[2]/div/div[1]/div/c-wiz/div[2]/div/div[1]/div[1]/div/div/div/div[2]/div[2]/div[1]/div[1]/section/div[2]/div/div[2]/div[2]/div/div/button[2]")))
     carryonButton = driver.find_element_by_xpath("/html/body/c-wiz[2]/div/div[2]/div/div[1]/div/c-wiz/div[2]/div/div[1]/div[1]/div/div/div/div[2]/div[2]/div[1]/div[1]/section/div[2]/div/div[2]/div[2]/div/div/button[2]")
     carryonButton.click()
-    time.sleep(5)
+    # Change calendar dates to flexible trip
+    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "/html/body/c-wiz[2]/div/div[2]/div/div/div/c-wiz/div[2]/div/div[1]/div[1]/section/div/div[1]/div[1]/div[1]/div[2]/div[2]/div/div/div[1]/div/div/div/div[1]/div/div[1]/div/input"))).click()
+    time.sleep(1)
+    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "/html/body/c-wiz[2]/div/div[2]/div/div/div/c-wiz/div[2]/div/div[1]/div[1]/section/div/div[1]/div[1]/div[1]/div[2]/div[2]/div/div/div[2]/div/div[2]/div/div[1]/div/div/div/span/button[2]/span[2]"))).click()
+    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "/html/body/c-wiz[2]/div/div[2]/div/div[1]/div/c-wiz/div[2]/div/div[1]/div[1]/section/div/div[1]/div[1]/div[1]/div[2]/div[2]/div/div/div[2]/div/div[3]/div[1]/button"))).click()
+    time.sleep(3)
     # Scrape all listings generated
     ticketList = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "/html/body/c-wiz[2]/div/div[2]/div/div[1]/div/c-wiz/div[2]/div/div[1]/main/div/div[2]/ol")))
     for listing in ticketList.find_elements_by_xpath(".//li"):
         try:
             destination = listing.find_element_by_xpath(".//div/div[2]/div[1]/h3").text
             price = listing.find_element_by_xpath(".//div/div[2]/div[2]/div/span/span").text
-            print(destination + " - " + price)
-            print("------------------------------------------------")
+            duration = listing.find_element_by_xpath(".//div/div[2]/div[1]/div[1]").text
+            print(destination + " - " + price + " - " + duration)
         except:
             break
-    
     
     
 finally:
