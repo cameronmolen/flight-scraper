@@ -33,7 +33,17 @@ try:
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "/html/body/c-wiz[2]/div/div[2]/div/div[1]/div/c-wiz/div[2]/div/div[1]/div[1]/div/div/div/div[2]/div[2]/div[1]/div[1]/section/div[2]/div/div[2]/div[2]/div/div/button[2]")))
     carryonButton = driver.find_element_by_xpath("/html/body/c-wiz[2]/div/div[2]/div/div[1]/div/c-wiz/div[2]/div/div[1]/div[1]/div/div/div/div[2]/div[2]/div[1]/div[1]/section/div[2]/div/div[2]/div[2]/div/div/button[2]")
     carryonButton.click()
-    # TODO: Instead of changing the slider, just scrape all listings and check the price on each one to decide whether or not to include it in DataFrame.
+    time.sleep(5)
+    # Scrape all listings generated
+    ticketList = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "/html/body/c-wiz[2]/div/div[2]/div/div[1]/div/c-wiz/div[2]/div/div[1]/main/div/div[2]/ol")))
+    for listing in ticketList.find_elements_by_xpath(".//li"):
+        try:
+            destination = listing.find_element_by_xpath(".//div/div[2]/div[1]/h3").text
+            price = listing.find_element_by_xpath(".//div/div[2]/div[2]/div/span/span").text
+            print(destination + " - " + price)
+            print("------------------------------------------------")
+        except:
+            break
     
     
     
