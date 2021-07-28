@@ -8,6 +8,10 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 DEPARTING_AIRPORT = "Salt Lake City"
 MAX_PRICE = 400
+SENDER_EMAIL = "cam.testing.coding@gmail.com"
+RECEIVER_EMAIL = "cameronmolen@gmail.com"
+emailMessage = "Subject: Cheap Flights from " + DEPARTING_AIRPORT + "\n\n"
+
 
 DRIVER_PATH = "/Volumes/WD Drive/Applications/Chromedriver/chromedriver"
 driver = webdriver.Chrome(executable_path = DRIVER_PATH)
@@ -48,12 +52,24 @@ try:
             destination = listing.find_element_by_xpath(".//div/div[2]/div[1]/h3").text
             price = listing.find_element_by_xpath(".//div/div[2]/div[2]/div/span/span").text
             duration = listing.find_element_by_xpath(".//div/div[2]/div[1]/div[1]").text
-            print(destination + " - " + price + " - " + duration)
+            emailMessage += destination + " - " + price + " - " + duration + "\n"
         except:
             break
     
-    
 finally:
+
+    #------------------------------------------Create and send email------------------------------------------#
+    import smtplib, ssl
+    
+    port = 465
+    password = "password" # Insert password here
+    
+    context = ssl.create_default_context()
+    
+    with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
+        server.login(SENDER_EMAIL, password)
+        server.sendmail(SENDER_EMAIL, RECEIVER_EMAIL, emailMessage)
+    
     print("Scraping completed.")
 
 #-------For headless mode, use this code-------
