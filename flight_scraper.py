@@ -5,17 +5,27 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.chrome.options import Options
 
-DEPARTING_AIRPORT = "Salt Lake City"
-MAX_PRICE = 400
-SENDER_EMAIL = "cam.testing.coding@gmail.com"
-RECEIVER_EMAIL = "cameronmolen@gmail.com"
-emailMessage = "Subject: Cheap Flights from " + DEPARTING_AIRPORT + "\n\n"
-
-
+# For headless driver
 DRIVER_PATH = "/Volumes/WD Drive/Applications/Chromedriver/chromedriver"
-driver = webdriver.Chrome(executable_path = DRIVER_PATH)
-driver.get("https://www.google.com/flights")
+options = Options()
+options.headless = True
+options.add_argument("--window-size=1920,1200")
+driver = webdriver.Chrome(options = options, executable_path = DRIVER_PATH)
+driver.get("https://google.com/flights")
+
+# For driver with GUI
+#DRIVER_PATH = "/Volumes/WD Drive/Applications/Chromedriver/chromedriver"
+#driver = webdriver.Chrome(executable_path = DRIVER_PATH)
+#driver.get("https://www.google.com/flights")
+
+DEPARTING_AIRPORT = "Salt Lake City"            # Enter departing airport here
+MAX_PRICE = 400                                 # Enter max price here
+SENDER_EMAIL = "@gmail.com"     # Enter sender email here
+PASSWORD = "pass"                       # Insert password here
+RECEIVER_EMAIL = "@gmail.com"       # Insert reciver email here
+emailMessage = "Subject: Cheap Flights from " + DEPARTING_AIRPORT + "\n\n"
 
 try:
     # Enter in departing airport
@@ -28,7 +38,7 @@ try:
         airportSelector = driver.find_element_by_xpath("/html/body/c-wiz[2]/div/div[2]/div/c-wiz/div/c-wiz/div[2]/div[1]/div[1]/div[2]/div[1]/div[6]/div[2]/div[6]/div/ul/li[1]/div[2]/div[1]/div")
         airportSelector.click()
     except:
-        print("Error: Scraping failed. Try again.")
+        print("Error: Scraping done on incorrect location.")
     # Click search button
     searchButton = driver.find_element_by_xpath("//*[@id=\"yDmH0d\"]/c-wiz[2]/div/div[2]/div/c-wiz/div/c-wiz/div[2]/div[1]/div[2]/div/button")
     searchButton.click()
@@ -50,11 +60,14 @@ try:
     for listing in ticketList.find_elements_by_xpath(".//li"):
         try:
             destination = listing.find_element_by_xpath(".//div/div[2]/div[1]/h3").text
-            price = listing.find_element_by_xpath(".//div/div[2]/div[2]/div/span/span").text
+            price = listing.find_element_by_xpath(".//div/div[2]/div[2]/div/span/span").text[1:]
             duration = listing.find_element_by_xpath(".//div/div[2]/div[1]/div[1]").text
-            emailMessage += destination + " - " + price + " - " + duration + "\n"
+            if int(price) <= MAX_PRICE:
+                emailMessage += destination + " - $" + price + "\n" + duration + "\n\n"
         except:
             break
+    # Add the current URL to the emailMessage
+    emailMessage += driver.current_url
     
 finally:
 
@@ -62,28 +75,12 @@ finally:
     import smtplib, ssl
     
     port = 465
-    password = "password" # Insert password here
-    
     context = ssl.create_default_context()
     
     with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
-        server.login(SENDER_EMAIL, password)
-        server.sendmail(SENDER_EMAIL, RECEIVER_EMAIL, emailMessage)
+        server.login(SENDER_EMAIL, PASSWORD)
+        server.sendmail(SENDER_EMAIL, RECEIVER_EMAIL, emailMessage.encode("utf-8"))
+    #---------------------------------------------------------------------------------------------------------#
     
-    print("Scraping completed.")
-
-#-------For headless mode, use this code-------
-#from selenium import webdriver
-#from selenium.webdriver.chrome.options import Options
-#
-#DRIVER_PATH = "/Volumes/WD Drive/Applications/Chromedriver/chromedriver"
-#
-#options = Options()
-#options.headless = True
-#options.add_argument("--window-size=1920,1200")
-#
-#driver = webdriver.Chrome(options = options, executable_path = DRIVER_PATH)
-#driver.get("https://google.com/flights")
-#print(driver.page_source)
-#driver.quit()
-#-----------------------------------------------
+    driver.quit()
+    print("Scraping completed. Email sent.")
