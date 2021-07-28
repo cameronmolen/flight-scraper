@@ -24,24 +24,25 @@ driver.get("https://google.com/flights")
 #-------------------------------------------------------------------------------------------------------#
 
 DEPARTING_AIRPORT = "Salt Lake City"            # Enter departing airport here
-MAX_PRICE = 400                                 # Enter max price here
-SENDER_EMAIL = "@gmail.com"     # Enter sender email here
-PASSWORD = "pass"                       # Insert password here
-RECEIVER_EMAIL = "@gmail.com"       # Insert reciver email here
-emailMessage = "Subject: Cheap Flights from " + DEPARTING_AIRPORT + "\n\n"
+MAX_PRICE = 150                                 # Enter max price here
+SENDER_EMAIL = "@gmail.com"                     # Enter sender email here
+PASSWORD = "pass"                               # Insert password here
+RECEIVER_EMAIL = "@gmail.com"                   # Insert reciver email here
 
 try:
     #-------------------------------------Enter in departing airport-------------------------------------#
     try:
         whereFromInput = driver.find_element_by_xpath("//*[@id=\"i6\"]/div[1]/div/div/div[1]/div/div/input")
+        plainMessage = "Subject: Cheap Flights from " + whereFromInput.get_attribute("value") + "\n\n"
         whereFromInput.click()
         whereFromInput.send_keys(DEPARTING_AIRPORT)
         whereFromInput.send_keys(Keys.ENTER)
         time.sleep(1)
         airportSelector = driver.find_element_by_xpath("/html/body/c-wiz[2]/div/div[2]/div/c-wiz/div/c-wiz/div[2]/div[1]/div[1]/div[2]/div[1]/div[6]/div[2]/div[6]/div/ul/li[1]/div[2]/div[1]/div")
         airportSelector.click()
+        plainMessage = "Subject: Cheap Flights from " + DEPARTING_AIRPORT + "\n\n"
     except:
-        print("Error: Scraping done on incorrect location.")
+        print("Error: Scraping done on local location instead of specified departing airport.")
     #-----------------------------------------Click search button-----------------------------------------#
     searchButton = driver.find_element_by_xpath("//*[@id=\"yDmH0d\"]/c-wiz[2]/div/div[2]/div/c-wiz/div/c-wiz/div[2]/div[1]/div[2]/div/button")
     searchButton.click()
@@ -66,11 +67,11 @@ try:
             price = listing.find_element_by_xpath(".//div/div[2]/div[2]/div/span/span").text[1:]
             duration = listing.find_element_by_xpath(".//div/div[2]/div[1]/div[1]").text
             if int(price) <= MAX_PRICE:
-                emailMessage += destination + " - $" + price + "\n" + duration + "\n\n"
+                plainMessage += destination + " - $" + price + "\n" + duration + "\n\n"
         except:
             break
     #--------------------------------Add the current URL to the emailMessage---------------------------------#
-    emailMessage += driver.current_url
+    plainMessage += "Find all listed flights here:\n" + driver.current_url
     
 finally:
     #------------------------------------------Create and send email------------------------------------------#
@@ -81,7 +82,7 @@ finally:
     
     with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
         server.login(SENDER_EMAIL, PASSWORD)
-        server.sendmail(SENDER_EMAIL, RECEIVER_EMAIL, emailMessage.encode("utf-8"))
+        server.sendmail(SENDER_EMAIL, RECEIVER_EMAIL, plainMessage.encode("utf-8"))
     #---------------------------------------------------------------------------------------------------------#
     
     driver.quit()
